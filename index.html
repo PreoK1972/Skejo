@@ -777,7 +777,7 @@
           <span class="settings-item-label">🔔 Alarm Sound</span>
           <span class="settings-item-icon">On ›</span>
         </div>
-        <div class="settings-item" id="settings-install" style="display: none;" onclick="triggerPWAInstall()">
+        <div class="settings-item" id="settings-install" style="display: flex;" onclick="triggerPWAInstall()">
           <span class="settings-item-label">📲 Install App</span>
           <span class="settings-item-icon">› </span>
         </div>
@@ -1510,7 +1510,14 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 async function triggerPWAInstall() {
-  if (!deferredPrompt) return;
+  if (!deferredPrompt) {
+    if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+      showToast('Skejo is already installed! 📱', 'success');
+    } else {
+      showToast('Install: Tap browser menu (⋮) -> "Add to Home Screen" or "Install"', 'success');
+    }
+    return;
+  }
   // Show the prompt
   deferredPrompt.prompt();
   // Wait for the user to respond to the prompt
