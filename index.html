@@ -672,7 +672,7 @@
           <span class="settings-item-label">🔔 Alarm Sound</span>
           <span class="settings-item-icon">On ›</span>
         </div>
-        <div class="settings-item">
+        <div class="settings-item" id="settings-install" style="display: none;" onclick="triggerPWAInstall()">
           <span class="settings-item-label">📲 Install App</span>
           <span class="settings-item-icon">› </span>
         </div>
@@ -1300,6 +1300,61 @@ enterApp = function() {
   if (state.user) localStorage.setItem('skejo_session', JSON.stringify(state.user));
   _enterApp();
 };
+
+// ═══════════════════════════════════════════════════════
+//                  PWA INSTALLATION LOGIC
+// ═══════════════════════════════════════════════════════
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+  // Update UI to show the install button
+  const installBtn = document.getElementById('settings-install');
+  if (installBtn) {
+    installBtn.style.display = 'flex';
+  }
+});
+
+async function triggerPWAInstall() {
+  if (!deferredPrompt) return;
+  // Show the prompt
+  deferredPrompt.prompt();
+  // Wait for the user to respond to the prompt
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    showToast('Installing Skejo... 🎉', 'success');
+  } else {
+    showToast('Installation cancelled', 'error');
+  }
+  // Clear the prompt
+  deferredPrompt = null;
+  // Hide the button
+  const installBtn = document.getElementById('settings-install');
+  if (installBtn) {
+    installBtn.style.display = 'none';
+  }
+}
+
+window.addEventListener('appinstalled', () => {
+  showToast('Skejo installed successfully! 📱', 'success');
+  const installBtn = document.getElementById('settings-install');
+  if (installBtn) {
+    installBtn.style.display = 'none';
+  }
+});
+
+// Check if already running in standalone mode
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+    const installBtn = document.getElementById('settings-install');
+    if (installBtn) {
+      installBtn.style.display = 'none';
+    }
+  }
+});
 </script>
 
 <!-- PWA SERVICE WORKER REGISTRATION -->
