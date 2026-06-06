@@ -1015,6 +1015,11 @@ function loadState() {
     state.streak = d.streak || 0;
     state.bestStreak = d.bestStreak || 0;
     state.totalCompleted = d.totalCompleted || 0;
+  } else {
+    state.tasks = {};
+    state.streak = 0;
+    state.bestStreak = 0;
+    state.totalCompleted = 0;
   }
 }
 
@@ -1072,6 +1077,9 @@ function handleLogout() {
   clearAlarmTimers();
   state.user = null;
   state.tasks = {};
+  state.streak = 0;
+  state.bestStreak = 0;
+  state.totalCompleted = 0;
   document.getElementById('app-screen').classList.remove('active');
   document.getElementById('auth-screen').classList.add('active');
   showToast('Signed out. See you tomorrow!');
@@ -1084,6 +1092,7 @@ function enterApp() {
   document.getElementById('auth-screen').classList.remove('active');
   document.getElementById('app-screen').classList.add('active');
   state.selectedDate = todayStr();
+  switchView('schedule');
   updateHeaderDate();
   renderDateSelector();
   renderTasks();
