@@ -1,7 +1,7 @@
 {
   "name": "skejo",
   "version": "1.0.0",
-  "description": "Skejo — Forge Your Day: Schedule your day with rituals, alarms, and streak tracking",
+  "description": "Skejo — Forge Your Day: Schedule your day with routines, alarms, and streak tracking",
   "main": "index.html",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,7 @@
     "pwa",
     "schedule",
     "planner",
-    "rituals"
+    "routines"
   ],
   "author": "",
   "license": "ISC",

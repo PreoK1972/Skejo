@@ -606,6 +606,15 @@
     }
     #about-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
 
+    /* ─── PWA INSTALL OVERLAY ─── */
+    #ios-install-overlay {
+      display: none; position: fixed; inset: 0; z-index: 6000;
+      background: rgba(10,10,12,0.85); backdrop-filter: blur(16px);
+      align-items: flex-end; justify-content: center;
+      padding: 0;
+    }
+    #ios-install-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
+
     .about-modal {
       background: var(--surface); width: 100%; max-width: 520px;
       border-radius: 24px 24px 0 0; border-top: 1px solid var(--border);
@@ -718,20 +727,20 @@
     </div>
 
     <div class="landing-hero">
-      <h1 class="landing-title">Defeat Procrastination with Rituals</h1>
-      <p class="landing-subtitle">Skejo is a daily ritual planner designed to help you take consistent action and build bulletproof discipline, one block at a time.</p>
+      <h1 class="landing-title">Defeat Procrastination with Routines</h1>
+      <p class="landing-subtitle">Skejo is a daily routine planner designed to help you take consistent action and build bulletproof discipline, one block at a time.</p>
     </div>
 
     <div class="landing-card-grid">
       <div class="landing-card">
         <div class="landing-card-icon">⚡</div>
-        <div class="landing-card-title">Structured Rituals</div>
+        <div class="landing-card-title">Structured Routines</div>
         <div class="landing-card-desc">Group tasks and habits into structured timeblocks. Run your mornings, focus sessions, and evenings on autopilot.</div>
       </div>
       <div class="landing-card">
         <div class="landing-card-icon">🔥 Integrity Streaks</div>
         <div class="landing-card-title">True Accountability</div>
-        <div class="landing-card-desc">Streaks only advance when you complete all rituals of the day. Checking off tasks prompts an integrity reflection.</div>
+        <div class="landing-card-desc">Streaks only advance when you complete all routines of the day. Checking off tasks prompts an integrity reflection.</div>
       </div>
       <div class="landing-card">
         <div class="landing-card-icon">⏰ Repetitive Alarms</div>
@@ -874,8 +883,8 @@
       <div id="tasks-container">
         <div class="empty-state">
           <div class="empty-icon">📅</div>
-          <div class="empty-title">No rituals yet</div>
-          <div class="empty-sub">Tap the ＋ button to add your first scheduled ritual for this day.</div>
+          <div class="empty-title">No routines yet</div>
+          <div class="empty-sub">Tap the ＋ button to add your first scheduled routine for this day.</div>
         </div>
       </div>
     </div>
@@ -887,28 +896,28 @@
         <div class="template-card" onclick="applyTemplate('morning')">
           <div class="template-icon">🌅</div>
           <div class="template-name">Morning Warrior</div>
-          <div class="template-count">5 rituals • 7am–10am</div>
+          <div class="template-count">5 routines • 7am–10am</div>
         </div>
         <div class="template-card" onclick="applyTemplate('work')">
           <div class="template-icon">💼</div>
           <div class="template-name">Deep Work Day</div>
-          <div class="template-count">4 rituals • 9am–5pm</div>
+          <div class="template-count">4 routines • 9am–5pm</div>
         </div>
         <div class="template-card" onclick="applyTemplate('fitness')">
           <div class="template-icon">🏋️</div>
           <div class="template-name">Fitness Focus</div>
-          <div class="template-count">4 rituals • 6am–8pm</div>
+          <div class="template-count">4 routines • 6am–8pm</div>
         </div>
         <div class="template-card" onclick="applyTemplate('rest')">
           <div class="template-icon">🧘</div>
           <div class="template-name">Rest & Recover</div>
-          <div class="template-count">3 rituals • All day</div>
+          <div class="template-count">3 routines • All day</div>
         </div>
       </div>
       <div style="height:16px;"></div>
       <div class="section-label">About Templates</div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-size:14px;color:var(--text2);line-height:1.6;">
-        Templates apply to the currently selected day in your Schedule. Select a day first, then choose a template to instantly populate it with pre-built rituals. You can then customize times and tasks freely.
+        Templates apply to the currently selected day in your Schedule. Select a day first, then choose a template to instantly populate it with pre-built routines. You can then customize times and tasks freely.
       </div>
     </div>
 
@@ -935,8 +944,8 @@
           <div class="stat-card-lbl">Days Planned</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-num" id="total-rituals">0</div>
-          <div class="stat-card-lbl">Total Rituals</div>
+          <div class="stat-card-num" id="total-routines">0</div>
+          <div class="stat-card-lbl">Total Routines</div>
         </div>
       </div>
       <div class="settings-list">
@@ -948,7 +957,7 @@
           <span class="settings-item-label">📲 Install App</span>
           <span class="settings-item-icon">› </span>
         </div>
-        <div class="settings-item">
+        <div class="settings-item" onclick="exportUserData()">
           <span class="settings-item-label">📊 Export Data</span>
           <span class="settings-item-icon">›</span>
         </div>
@@ -972,10 +981,10 @@
 <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="add-sheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-title">New Ritual</div>
+  <div class="sheet-title">New Routine</div>
 
   <div class="form-row">
-    <label class="form-label">Ritual Name</label>
+    <label class="form-label">Routine Name</label>
     <input class="form-input" type="text" id="task-name" placeholder="e.g. Breakfast, Morning Run…" />
   </div>
 
@@ -1005,7 +1014,7 @@
     </div>
   </div>
 
-  <button class="btn-primary" onclick="addTask()" style="margin-top:8px;">Add Ritual ＋</button>
+  <button class="btn-primary" onclick="addTask()" style="margin-top:8px;">Add Routine ＋</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════ -->
@@ -1025,7 +1034,7 @@
     <div class="about-body">
       <div class="about-section">
         <div class="about-section-title">🎯 Purpose</div>
-        <div class="about-section-text">Skejo is a productivity tool designed to eliminate procrastination and empower users to plan their days with intention. By building structured habits and routines — called <strong>Rituals</strong> — Skejo helps users take consistent, meaningful action toward their goals.</div>
+        <div class="about-section-text">Skejo is a productivity tool designed to eliminate procrastination and empower users to plan their days with intention. By building structured habits and routines — called <strong>Routines</strong> — Skejo helps users take consistent, meaningful action toward their goals.</div>
       </div>
 
       <div class="about-section">
@@ -1037,7 +1046,7 @@
           </div>
           <div class="about-step">
             <div class="about-step-num">2</div>
-            <div class="about-step-text">Create your first Ritual — a personal habit or daily routine you want to build.</div>
+            <div class="about-step-text">Create your first Routine — a personal habit or daily routine you want to build.</div>
           </div>
           <div class="about-step">
             <div class="about-step-num">3</div>
@@ -1162,9 +1171,9 @@
   <div class="integrity-modal">
     <div class="integrity-header">
       <div class="integrity-icon">🤝</div>
-      <div class="integrity-title">Ritual Reflection</div>
+      <div class="integrity-title">Routine Reflection</div>
     </div>
-    <p class="integrity-desc">Did you complete <strong><span id="integrity-task-name">this ritual</span></strong> with focus? To maintain an authentic streak, confirm your effort below.</p>
+    <p class="integrity-desc">Did you complete <strong><span id="integrity-task-name">this routine</span></strong> with focus? To maintain an authentic streak, confirm your effort below.</p>
     
     <div class="form-row">
       <label class="form-label" for="integrity-reflection">Reflection Log (Briefly what you did)</label>
@@ -1178,7 +1187,65 @@
 
     <div class="integrity-actions">
       <button class="landing-btn landing-btn-secondary" onclick="cancelIntegrity()" style="padding: 12px;">Cancel</button>
-      <button class="landing-btn landing-btn-primary" id="btn-integrity-submit" onclick="submitIntegrity()" style="padding: 12px;">Complete Ritual</button>
+      <button class="landing-btn landing-btn-primary" id="btn-integrity-submit" onclick="submitIntegrity()" style="padding: 12px;">Complete Routine</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--           iOS / PWA INSTALL GUIDE MODAL         -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="ios-install-overlay" onclick="closeInstallGuide()">
+  <div class="about-modal" onclick="event.stopPropagation()">
+    <div class="about-header">
+      <div class="about-logo">
+        <div class="about-logo-icon">📲</div>
+        <div class="about-logo-text">Install Skejo</div>
+        <div class="about-logo-tagline">Access Skejo from your home screen offline</div>
+      </div>
+      <button class="about-close" onclick="closeInstallGuide()">✕</button>
+    </div>
+
+    <div class="about-body">
+      <div class="about-section" id="ios-steps">
+        <div class="about-section-title">🍏 iOS Safari Installation Steps</div>
+        <div class="about-steps">
+          <div class="about-step">
+            <div class="about-step-num">1</div>
+            <div class="about-step-text">Tap the <strong>Share</strong> button <span style="font-size: 18px; vertical-align: middle;">⎋</span> (or <span style="font-size: 18px; vertical-align: middle;">📤</span>) in Safari's bottom toolbar.</div>
+          </div>
+          <div class="about-step">
+            <div class="about-step-num">2</div>
+            <div class="about-step-text">Scroll down the share menu and select <strong>"Add to Home Screen"</strong> <span style="font-size: 16px; vertical-align: middle;">➕</span>.</div>
+          </div>
+          <div class="about-step">
+            <div class="about-step-num">3</div>
+            <div class="about-step-text">Tap <strong>"Add"</strong> in the top-right corner to complete the installation.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-section" id="other-steps" style="display: none;">
+        <div class="about-section-title">🤖 Android / Desktop Installation</div>
+        <div class="about-steps">
+          <div class="about-step">
+            <div class="about-step-num">1</div>
+            <div class="about-step-text">Tap the browser's **menu** button (usually three dots <span style="font-weight: bold;">⋮</span> in the top-right).</div>
+          </div>
+          <div class="about-step">
+            <div class="about-step-num">2</div>
+            <div class="about-step-text">Select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong> from the list.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: rgba(108,99,255,0.08); border: 1px solid rgba(108,99,255,0.25); border-radius: var(--radius-sm); padding: 14px; font-size: 13px; color: var(--text2); line-height: 1.55;">
+        🚀 <strong>Why Install?</strong> Installing creates a direct app icon alongside your other apps, removes browser toolbars, enables full offline support, and ensures alarms trigger reliably.
+      </div>
+    </div>
+
+    <div class="about-footer">
+      <button class="btn-primary" onclick="closeInstallGuide()" style="padding: 12px; border-radius: var(--radius-sm);">Got It</button>
     </div>
   </div>
 </div>
@@ -1393,7 +1460,16 @@ function enterApp() {
   updateProgressRing();
   updateProfileView();
   scheduleAllAlarms();
+  requestNotificationPermission();
   setInterval(checkAlarms, 30000); // check every 30 seconds
+}
+
+function requestNotificationPermission() {
+  if ('Notification' in window) {
+    if (Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
 }
 
 function updateHeaderDate() {
@@ -1447,8 +1523,8 @@ function renderTasks() {
   if (!tasks.length) {
     container.innerHTML = `<div class="empty-state">
       <div class="empty-icon">📅</div>
-      <div class="empty-title">No rituals yet</div>
-      <div class="empty-sub">Tap <strong>＋</strong> to add your first scheduled ritual for this day. Or try a Template!</div>
+      <div class="empty-title">No routines yet</div>
+      <div class="empty-sub">Tap <strong>＋</strong> to add your first scheduled routine for this day. Or try a Template!</div>
     </div>`;
     return;
   }
@@ -1528,6 +1604,7 @@ function toggleDone(id) {
     renderTasks();
     updateProgressRing();
     updateProfileView();
+    scheduleAllAlarms();
   } else {
     integrityTaskId = id;
     document.getElementById('integrity-task-name').textContent = t.name;
@@ -1556,13 +1633,14 @@ function submitIntegrity() {
   state.totalCompleted++;
   
   document.getElementById('integrity-overlay').classList.remove('active');
-  showToast('Ritual complete! 🎉', 'success');
+  showToast('Routine complete! 🎉', 'success');
   
   saveState();
   renderTasks();
   updateProgressRing();
   updateProfileView();
   checkStreaks();
+  scheduleAllAlarms();
   integrityTaskId = null;
 }
 
@@ -1647,7 +1725,7 @@ function addTask() {
   closeSheet();
   document.getElementById('task-name').value = '';
   document.getElementById('task-category').value = '';
-  showToast('Ritual added! ⚒️', 'success');
+  showToast('Routine added! ⚒️', 'success');
   scheduleAllAlarms();
 }
 
@@ -1684,15 +1762,56 @@ function scheduleAllAlarms() {
 
   tasks.forEach(task => {
     if (task.done) return;
-    const [h, m] = task.start.split(':').map(Number);
-    const alarmTime = new Date();
-    alarmTime.setHours(h, m, 0, 0);
-    const ms = alarmTime - now;
-    if (ms > 0 && ms < 86400000) {
-      const tid = setTimeout(() => triggerAlarm(task), ms);
+    
+    // Start Time Alarm
+    const [sh, sm] = task.start.split(':').map(Number);
+    const startAlarmTime = new Date();
+    startAlarmTime.setHours(sh, sm, 0, 0);
+    const startMs = startAlarmTime - now;
+    if (startMs > 0 && startMs < 86400000) {
+      const tid = setTimeout(() => triggerStartAlarm(task), startMs);
+      state.alarmTimers.push(tid);
+    }
+    
+    // End Time Alarm
+    const [eh, em] = task.end.split(':').map(Number);
+    const endAlarmTime = new Date();
+    endAlarmTime.setHours(eh, em, 0, 0);
+    const endMs = endAlarmTime - now;
+    if (endMs > 0 && endMs < 86400000) {
+      const tid = setTimeout(() => triggerEndAlarm(task), endMs);
       state.alarmTimers.push(tid);
     }
   });
+}
+
+function triggerStartAlarm(task) {
+  triggerAlarm(task, 'start');
+}
+
+function triggerEndAlarm(task) {
+  triggerAlarm(task, 'end');
+}
+
+function showSystemNotification(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        registration.showNotification(title, {
+          body: body,
+          icon: 'icon-192.png',
+          vibrate: [200, 100, 200],
+          tag: 'skejo-alarm',
+          renotify: true,
+          requireInteraction: true
+        });
+      }).catch(() => {
+        new Notification(title, { body: body, icon: 'icon-192.png' });
+      });
+    } else {
+      new Notification(title, { body: body, icon: 'icon-192.png' });
+    }
+  }
 }
 
 function checkAlarms() {
@@ -1856,12 +1975,34 @@ function previewTone(soundId, event) {
   state.alarmSound = previousSound;
 }
 
-function triggerAlarm(task) {
+function triggerAlarm(task, type = 'start') {
   if (task.done) return;
   state.activeAlarmTask = task;
+  state.activeAlarmType = type;
+  
   const overlay = document.getElementById('alarm-overlay');
-  document.getElementById('alarm-time-display').textContent = task.start;
-  document.getElementById('alarm-task-name').textContent = '⏰ ' + task.name;
+  const dismissBtn = overlay.querySelector('.btn-dismiss');
+  
+  if (type === 'start') {
+    document.getElementById('alarm-time-display').textContent = task.start;
+    document.getElementById('alarm-task-name').textContent = '🌅 Begin: ' + task.name;
+    if (dismissBtn) dismissBtn.textContent = '✓ START ROUTINE';
+    
+    showSystemNotification(
+      '🌅 Routine Starting: ' + task.name,
+      `It is time to begin your "${task.name}" routine (${task.start} - ${task.end}).`
+    );
+  } else {
+    document.getElementById('alarm-time-display').textContent = task.end;
+    document.getElementById('alarm-task-name').textContent = '🏁 Complete: ' + task.name;
+    if (dismissBtn) dismissBtn.textContent = '✓ VERIFY COMPLETION';
+    
+    showSystemNotification(
+      '🏁 Routine Ended: ' + task.name,
+      `It is time to log and verify completion of your "${task.name}" routine.`
+    );
+  }
+  
   document.getElementById('alarm-quote').textContent = QUOTES[Math.floor(Math.random() * QUOTES.length)];
 
   const bf = document.getElementById('breathe-fill');
@@ -1891,11 +2032,25 @@ function dismissAlarm() {
     clearInterval(alarmLoopInterval);
     alarmLoopInterval = null;
   }
-  if (state.activeAlarmTask) {
-    toggleDone(state.activeAlarmTask.id);
-    state.activeAlarmTask = null;
+  
+  const task = state.activeAlarmTask;
+  const type = state.activeAlarmType;
+  
+  state.activeAlarmTask = null;
+  state.activeAlarmType = null;
+  
+  if (task) {
+    if (type === 'end') {
+      // Auto-prompt Integrity Modal directly
+      integrityTaskId = task.id;
+      document.getElementById('integrity-task-name').textContent = task.name;
+      document.getElementById('integrity-reflection').value = '';
+      document.getElementById('integrity-confirm').checked = false;
+      document.getElementById('integrity-overlay').classList.add('active');
+    } else {
+      showToast('Routine started! Stay focused ⚡', 'success');
+    }
   }
-  showToast('Great work! Keep it up 🔥', 'success');
 }
 
 function openSoundSettings() {
@@ -2041,8 +2196,8 @@ function updateProfileView() {
   document.getElementById('total-completed').textContent = state.totalCompleted;
   document.getElementById('best-streak').textContent = state.bestStreak;
   document.getElementById('days-scheduled').textContent = Object.keys(state.tasks).length;
-  const totalRituals = Object.values(state.tasks).reduce((acc, arr) => acc + arr.length, 0);
-  document.getElementById('total-rituals').textContent = totalRituals;
+  const totalRoutines = Object.values(state.tasks).reduce((acc, arr) => acc + arr.length, 0);
+  document.getElementById('total-routines').textContent = totalRoutines;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2096,12 +2251,28 @@ window.addEventListener('beforeinstallprompt', (e) => {
   }
 });
 
+function openInstallGuide() {
+  const isIosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIosDevice) {
+    document.getElementById('ios-steps').style.display = 'block';
+    document.getElementById('other-steps').style.display = 'none';
+  } else {
+    document.getElementById('ios-steps').style.display = 'none';
+    document.getElementById('other-steps').style.display = 'block';
+  }
+  document.getElementById('ios-install-overlay').classList.add('active');
+}
+
+function closeInstallGuide() {
+  document.getElementById('ios-install-overlay').classList.remove('active');
+}
+
 async function triggerPWAInstall() {
   if (!deferredPrompt) {
     if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
       showToast('Skejo is already installed! 📱', 'success');
     } else {
-      showToast('Install: Tap browser menu (⋮) -> "Add to Home Screen" or "Install"', 'success');
+      openInstallGuide();
     }
     return;
   }
@@ -2140,6 +2311,45 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+// ═══════════════════════════════════════════════════════
+//                  EXPORT USER DATA
+// ═══════════════════════════════════════════════════════
+function exportUserData() {
+  if (!state.user) return showToast('Please sign in first', 'error');
+  
+  const dataStr = localStorage.getItem('skejo_' + state.user.email);
+  if (!dataStr) {
+    return showToast('No data to export', 'error');
+  }
+  
+  try {
+    const data = JSON.parse(dataStr);
+    const exportData = {
+      user: state.user,
+      exportedAt: new Date().toISOString(),
+      app: "Skejo",
+      data: data
+    };
+    
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `skejo_export_${state.user.email}_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showToast('Data exported successfully! 📊', 'success');
+  } catch (err) {
+    showToast('Failed to export data', 'error');
+    console.error(err);
+  }
+}
 </script>
 
 <!-- PWA SERVICE WORKER REGISTRATION -->

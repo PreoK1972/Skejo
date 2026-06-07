@@ -1,7 +1,7 @@
 {
   "name": "Skejo — Forge Your Day",
   "short_name": "Skejo",
-  "description": "Schedule your day with rituals, alarms, and streak tracking",
+  "description": "Schedule your day with routines, alarms, and streak tracking",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0d0d0f",
