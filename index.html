@@ -731,6 +731,18 @@
       <p class="landing-subtitle">Skejo is a daily routine planner designed to help you take consistent action and build bulletproof discipline, one block at a time.</p>
     </div>
 
+    <!-- LANDING INSTALL PWA BANNER -->
+    <div id="landing-install-banner" style="display: none; background: linear-gradient(135deg, rgba(240,180,41,0.12), rgba(232,112,58,0.12)); border: 1px solid rgba(240,180,41,0.3); border-radius: var(--radius); padding: 16px; margin-bottom: 8px; text-align: left; align-items: center; justify-content: space-between; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 28px;">📲</span>
+        <div>
+          <div style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--text);">Install Skejo on your device</div>
+          <div style="font-size: 12.5px; color: var(--text2); margin-top: 2px; line-height: 1.4;">Add to your home screen alongside other apps for direct access.</div>
+        </div>
+      </div>
+      <button onclick="triggerPWAInstall()" style="background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; color: #0d0d0f; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; padding: 10px 18px; border-radius: var(--radius-sm); cursor: pointer; white-space: nowrap; box-shadow: 0 4px 15px rgba(240,180,41,0.3);">Install App</button>
+    </div>
+
     <div class="landing-card-grid">
       <div class="landing-card">
         <div class="landing-card-icon">⚡</div>
@@ -880,6 +892,19 @@
     <div class="view-panel active" id="panel-schedule">
       <div style="height:16px;"></div>
       <div class="date-selector" id="date-selector"></div>
+      
+      <!-- SCHEDULE INSTALL PWA BANNER -->
+      <div id="schedule-install-banner" style="display: none; background: linear-gradient(135deg, rgba(240,180,41,0.15), rgba(232,112,58,0.15)); border: 1px solid rgba(240,180,41,0.4); border-radius: var(--radius); padding: 14px; margin-bottom: 16px; align-items: center; gap: 12px; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 24px;">📱</span>
+          <div>
+            <div style="font-weight: 600; font-size: 13.5px; color: var(--text);">Install Skejo App</div>
+            <div style="font-size: 11.5px; color: var(--text2); margin-top: 1px;">Access directly from your home screen offline.</div>
+          </div>
+        </div>
+        <button onclick="triggerPWAInstall()" style="background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; color: #0d0d0f; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; padding: 8px 14px; border-radius: var(--radius-sm); cursor: pointer; white-space: nowrap; box-shadow: 0 4px 12px rgba(240,180,41,0.25);">Install</button>
+      </div>
+
       <div id="tasks-container">
         <div class="empty-state">
           <div class="empty-icon">📅</div>
@@ -1461,6 +1486,7 @@ function enterApp() {
   updateProfileView();
   scheduleAllAlarms();
   requestNotificationPermission();
+  if (typeof checkInstallableStatus === 'function') checkInstallableStatus();
   setInterval(checkAlarms, 30000); // check every 30 seconds
 }
 
@@ -2239,16 +2265,38 @@ function closeAbout() {
 // ═══════════════════════════════════════════════════════
 let deferredPrompt = null;
 
+function checkInstallableStatus() {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const installBtn = document.getElementById('settings-install');
+  const scheduleBanner = document.getElementById('schedule-install-banner');
+  const landingBanner = document.getElementById('landing-install-banner');
+  
+  if (isStandalone) {
+    if (installBtn) installBtn.style.display = 'none';
+    if (scheduleBanner) scheduleBanner.style.display = 'none';
+    if (landingBanner) landingBanner.style.display = 'none';
+    return;
+  }
+  
+  const isIosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  
+  if (deferredPrompt || isIosDevice) {
+    if (installBtn) installBtn.style.display = 'flex';
+    if (scheduleBanner) scheduleBanner.style.display = 'flex';
+    if (landingBanner) landingBanner.style.display = 'flex';
+  } else {
+    if (installBtn) installBtn.style.display = 'none';
+    if (scheduleBanner) scheduleBanner.style.display = 'none';
+    if (landingBanner) landingBanner.style.display = 'none';
+  }
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
   // Prevent Chrome 67 and earlier from automatically showing the prompt
   e.preventDefault();
   // Stash the event so it can be triggered later
   deferredPrompt = e;
-  // Update UI to show the install button
-  const installBtn = document.getElementById('settings-install');
-  if (installBtn) {
-    installBtn.style.display = 'flex';
-  }
+  checkInstallableStatus();
 });
 
 function openInstallGuide() {
@@ -2287,29 +2335,17 @@ async function triggerPWAInstall() {
   }
   // Clear the prompt
   deferredPrompt = null;
-  // Hide the button
-  const installBtn = document.getElementById('settings-install');
-  if (installBtn) {
-    installBtn.style.display = 'none';
-  }
+  checkInstallableStatus();
 }
 
 window.addEventListener('appinstalled', () => {
   showToast('Skejo installed successfully! 📱', 'success');
-  const installBtn = document.getElementById('settings-install');
-  if (installBtn) {
-    installBtn.style.display = 'none';
-  }
+  checkInstallableStatus();
 });
 
 // Check if already running in standalone mode
 window.addEventListener('DOMContentLoaded', () => {
-  if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
-    const installBtn = document.getElementById('settings-install');
-    if (installBtn) {
-      installBtn.style.display = 'none';
-    }
-  }
+  checkInstallableStatus();
 });
 
 // ═══════════════════════════════════════════════════════
