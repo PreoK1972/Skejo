@@ -9,6 +9,10 @@
   <meta name="apple-mobile-web-app-title" content="Skejo" />
   <title>Skejo — Forge Your Day</title>
   <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
   <style>
@@ -480,6 +484,119 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
+    /* ─── LANDING SCREEN ─── */
+    #landing-screen {
+      background: radial-gradient(ellipse at 20% 20%, #1a1520 0%, var(--bg) 60%);
+      align-items: center; justify-content: flex-start; padding: 48px 24px;
+      overflow-y: auto;
+    }
+    .landing-container {
+      width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 32px;
+      margin: auto 0; text-align: center;
+      position: relative; z-index: 1;
+    }
+    .landing-hero {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .landing-title {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; line-height: 1.15;
+    }
+    .landing-subtitle {
+      font-size: 15px; color: var(--text2); line-height: 1.6; max-width: 480px; margin: 0 auto;
+    }
+    .landing-card-grid {
+      display: grid; grid-template-columns: 1fr; gap: 14px; text-align: left;
+    }
+    @media (min-width: 520px) {
+      .landing-card-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .landing-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .landing-card-icon { font-size: 24px; }
+    .landing-card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--text); }
+    .landing-card-desc { font-size: 12.5px; color: var(--text2); line-height: 1.5; }
+    
+    .landing-actions {
+      display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 380px; margin: 0 auto;
+    }
+    @media (min-width: 400px) {
+      .landing-actions { flex-direction: row; }
+    }
+    .landing-btn {
+      flex: 1; padding: 14px; text-align: center; font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 14.5px; border-radius: var(--radius-sm); cursor: pointer;
+      transition: all 0.2s; border: none; text-decoration: none;
+    }
+    .landing-btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #0d0d0f; box-shadow: 0 4px 20px rgba(240,180,41,0.25);
+    }
+    .landing-btn-primary:active { transform: scale(0.98); }
+    .landing-btn-secondary {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    }
+    .landing-btn-secondary:active { transform: scale(0.98); background: var(--surface2); }
+    .landing-footer { font-size: 12px; color: var(--text3); }
+
+    /* ─── INTEGRITY VALIDATION MODAL ─── */
+    #integrity-overlay {
+      display: none; position: fixed; inset: 0; z-index: 7000;
+      background: rgba(10,10,12,0.85); backdrop-filter: blur(16px);
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    #integrity-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
+    
+    .integrity-modal {
+      background: var(--surface); width: 100%; max-width: 400px;
+      border-radius: var(--radius); border: 1px solid var(--border);
+      padding: 24px; display: flex; flex-direction: column; gap: 18px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      animation: zoomIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    
+    .integrity-header {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .integrity-icon { font-size: 28px; }
+    .integrity-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--text); }
+    .integrity-desc { font-size: 13.5px; color: var(--text2); line-height: 1.6; }
+    .integrity-desc strong { color: var(--accent); }
+    .integrity-checkbox-label {
+      display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 13px; color: var(--text2); line-height: 1.5;
+      margin-top: 4px;
+    }
+    .integrity-checkbox { margin-top: 3px; accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+    .integrity-input {
+      width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; outline: none; transition: border-color 0.2s;
+    }
+    .integrity-input:focus { border-color: var(--accent); }
+    .integrity-actions { display: flex; gap: 10px; margin-top: 6px; }
+
+    /* ─── REFLECTION TAG DISPLAY ON TASK CARD ─── */
+    .task-reflection {
+      font-size: 12px; font-style: italic; color: var(--success);
+      margin-top: 6px; background: rgba(74,222,128,0.06);
+      border-left: 2px solid var(--success); padding: 5px 8px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    /* ─── SOUND SELECTOR OVERLAY ─── */
+    #sound-overlay {
+      display: none; position: fixed; inset: 0; z-index: 6000;
+      background: rgba(10,10,12,0.85); backdrop-filter: blur(16px);
+      align-items: flex-end; justify-content: center;
+      padding: 0;
+    }
+    #sound-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
+
+
     /* ─── ABOUT MODAL ─── */
     #about-overlay {
       display: none; position: fixed; inset: 0; z-index: 6000;
@@ -589,11 +706,61 @@
 <body>
 
 <!-- ═══════════════════════════════════════════════ -->
+<!--                  LANDING SCREEN                 -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="screen active" id="landing-screen">
+  <div class="auth-glow"></div>
+  <div class="landing-container">
+    <div class="logo-mark" style="margin-bottom: 0;">
+      <div class="logo-icon">⚒️</div>
+      <div class="logo-text">Skejo</div>
+      <div class="logo-sub">FORGE YOUR PERFECT DAY</div>
+    </div>
+
+    <div class="landing-hero">
+      <h1 class="landing-title">Defeat Procrastination with Rituals</h1>
+      <p class="landing-subtitle">Skejo is a daily ritual planner designed to help you take consistent action and build bulletproof discipline, one block at a time.</p>
+    </div>
+
+    <div class="landing-card-grid">
+      <div class="landing-card">
+        <div class="landing-card-icon">⚡</div>
+        <div class="landing-card-title">Structured Rituals</div>
+        <div class="landing-card-desc">Group tasks and habits into structured timeblocks. Run your mornings, focus sessions, and evenings on autopilot.</div>
+      </div>
+      <div class="landing-card">
+        <div class="landing-card-icon">🔥 Integrity Streaks</div>
+        <div class="landing-card-title">True Accountability</div>
+        <div class="landing-card-desc">Streaks only advance when you complete all rituals of the day. Checking off tasks prompts an integrity reflection.</div>
+      </div>
+      <div class="landing-card">
+        <div class="landing-card-icon">⏰ Repetitive Alarms</div>
+        <div class="landing-card-title">Focus Timers</div>
+        <div class="landing-card-desc">Alarms loop continuously at high volume until you start the task. Choose from built-in tones or upload custom files.</div>
+      </div>
+      <div class="landing-card">
+        <div class="landing-card-icon">📲 Native PWA App</div>
+        <div class="landing-card-title">Runs Anywhere</div>
+        <div class="landing-card-desc">Install Skejo directly to your Android, iOS, Windows, or Mac home screen to access features fully offline.</div>
+      </div>
+    </div>
+
+    <div class="landing-actions">
+      <button class="landing-btn landing-btn-primary" onclick="goToAuth('register')">Get Started</button>
+      <button class="landing-btn landing-btn-secondary" onclick="goToAuth('login')">Sign In</button>
+    </div>
+
+    <div class="landing-footer">Developed by Prince Kasalika under KM Brothers</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
 <!--                  AUTH SCREEN                    -->
 <!-- ═══════════════════════════════════════════════ -->
-<div class="screen active" id="auth-screen">
+<div class="screen" id="auth-screen">
   <div class="auth-glow"></div>
   <div class="auth-container">
+    <button onclick="goToLanding()" style="background:transparent; border:none; color:var(--text2); font-size:13px; cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:20px; font-family:'Syne',sans-serif; outline:none;">← Back to Home</button>
     <div class="logo-mark">
       <div class="logo-icon">⚒️</div>
       <div class="logo-text">Skejo</div>
@@ -773,9 +940,9 @@
         </div>
       </div>
       <div class="settings-list">
-        <div class="settings-item">
+        <div class="settings-item" onclick="openSoundSettings()">
           <span class="settings-item-label">🔔 Alarm Sound</span>
-          <span class="settings-item-icon">On ›</span>
+          <span id="current-sound-label" class="settings-item-icon">Forge Alert ›</span>
         </div>
         <div class="settings-item" id="settings-install" style="display: flex;" onclick="triggerPWAInstall()">
           <span class="settings-item-label">📲 Install App</span>
@@ -905,6 +1072,118 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════ -->
+<!--               SOUND SELECTOR MODAL             -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="sound-overlay" onclick="closeSoundSettings()">
+  <div class="about-modal" onclick="event.stopPropagation()" style="max-height: 80vh;">
+    <div class="about-header">
+      <div class="about-logo">
+        <div class="about-logo-icon">🔔</div>
+        <div class="about-logo-text">Alarm Sound</div>
+        <div class="about-logo-tagline">Customize alarm repeating tones and volume</div>
+      </div>
+      <button class="about-close" onclick="closeSoundSettings()">✕</button>
+    </div>
+
+    <div class="about-body" style="gap: 16px;">
+      <div class="about-section">
+        <div class="about-section-title">Built-in Repeating Tones</div>
+        <div class="about-steps" style="gap: 8px;">
+          <div class="settings-item" onclick="selectAlarmSound('forge')" style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+              <input type="radio" name="alarm-sound-choice" id="sound-forge" value="forge" style="accent-color: var(--accent);" />
+              <label for="sound-forge" style="font-size: 14px; color: var(--text); font-weight: 500; cursor: pointer;">⚒️ Forge Alert (Default)</label>
+            </div>
+            <button onclick="previewTone('forge', event)" style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: var(--accent);">▶️ Preview</button>
+          </div>
+
+          <div class="settings-item" onclick="selectAlarmSound('morning')" style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+              <input type="radio" name="alarm-sound-choice" id="sound-morning" value="morning" style="accent-color: var(--accent);" />
+              <label for="sound-morning" style="font-size: 14px; color: var(--text); font-weight: 500; cursor: pointer;">🌅 Morning Chime</label>
+            </div>
+            <button onclick="previewTone('morning', event)" style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: var(--accent);">▶️ Preview</button>
+          </div>
+
+          <div class="settings-item" onclick="selectAlarmSound('focus')" style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+              <input type="radio" name="alarm-sound-choice" id="sound-focus" value="focus" style="accent-color: var(--accent);" />
+              <label for="sound-focus" style="font-size: 14px; color: var(--text); font-weight: 500; cursor: pointer;">🚨 Focus Alarm</label>
+            </div>
+            <button onclick="previewTone('focus', event)" style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: var(--accent);">▶️ Preview</button>
+          </div>
+
+          <div class="settings-item" onclick="selectAlarmSound('zen')" style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+              <input type="radio" name="alarm-sound-choice" id="sound-zen" value="zen" style="accent-color: var(--accent);" />
+              <label for="sound-zen" style="font-size: 14px; color: var(--text); font-weight: 500; cursor: pointer;">🧘 Zen Bowl</label>
+            </div>
+            <button onclick="previewTone('zen', event)" style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: var(--accent);">▶️ Preview</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-title">📁 Custom Device Audio</div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+              <input type="radio" name="alarm-sound-choice" id="sound-custom" value="custom" style="accent-color: var(--accent);" onclick="selectAlarmSound('custom')" />
+              <label for="sound-custom" id="custom-sound-name" style="font-size: 14px; color: var(--text2); font-weight: 500; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">No custom sound uploaded</label>
+            </div>
+            <button id="btn-play-custom" onclick="previewTone('custom', event)" style="display: none; background: transparent; border: none; font-size: 16px; cursor: pointer; color: var(--accent); flex-shrink: 0; padding-left: 8px;">▶️ Preview</button>
+          </div>
+          <button class="landing-btn landing-btn-secondary" onclick="document.getElementById('custom-audio-file').click()" style="padding: 10px; font-size: 13px; font-family:'DM Sans',sans-serif;">📁 Choose Alarm from Phone</button>
+          <input type="file" id="custom-audio-file" accept="audio/*" style="display: none;" onchange="handleCustomAudioUpload(this)" />
+          <div style="font-size: 11px; color: var(--text3);">Supported formats: mp3, wav, m4a. Maximum size: 2MB. File is saved offline on your device.</div>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-title">🔊 Alarm Volume (<span id="alarm-volume-label">80%</span>)</div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 16px;">🔈</span>
+          <input type="range" id="alarm-volume-slider" min="10" max="100" value="80" style="flex: 1; accent-color: var(--accent); cursor: pointer;" oninput="updateAlarmVolume(this.value)" />
+          <span style="font-size: 16px;">🔊</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-footer">
+      <button class="btn-primary" onclick="closeSoundSettings()" style="padding: 12px; border-radius: var(--radius-sm);">Save & Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--           INTEGRITY REFLECTION MODAL            -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="integrity-overlay">
+  <div class="integrity-modal">
+    <div class="integrity-header">
+      <div class="integrity-icon">🤝</div>
+      <div class="integrity-title">Ritual Reflection</div>
+    </div>
+    <p class="integrity-desc">Did you complete <strong><span id="integrity-task-name">this ritual</span></strong> with focus? To maintain an authentic streak, confirm your effort below.</p>
+    
+    <div class="form-row">
+      <label class="form-label" for="integrity-reflection">Reflection Log (Briefly what you did)</label>
+      <input class="integrity-input" type="text" id="integrity-reflection" placeholder="e.g. Ran 5km in 24m, Read 10 pages, Worked with deep focus" />
+    </div>
+
+    <label class="integrity-checkbox-label">
+      <input type="checkbox" id="integrity-confirm" class="integrity-checkbox" />
+      <span style="padding-top: 1px;">I confirm with integrity that I have completed this task.</span>
+    </label>
+
+    <div class="integrity-actions">
+      <button class="landing-btn landing-btn-secondary" onclick="cancelIntegrity()" style="padding: 12px;">Cancel</button>
+      <button class="landing-btn landing-btn-primary" id="btn-integrity-submit" onclick="submitIntegrity()" style="padding: 12px;">Complete Ritual</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
 <!--               ALARM OVERLAY                    -->
 <!-- ═══════════════════════════════════════════════ -->
 <div id="alarm-overlay">
@@ -934,6 +1213,9 @@ let state = {
   alarmTimers: [],
   activeAlarmTask: null,
   alarmAudio: null,
+  alarmSound: 'forge',
+  alarmVolume: 0.8,
+  customAlarmData: null,
 };
 
 const QUOTES = [
@@ -1003,6 +1285,8 @@ function saveState() {
     streak: state.streak,
     bestStreak: state.bestStreak,
     totalCompleted: state.totalCompleted,
+    alarmSound: state.alarmSound || 'forge',
+    alarmVolume: state.alarmVolume !== undefined ? state.alarmVolume : 0.8
   }));
 }
 
@@ -1015,12 +1299,18 @@ function loadState() {
     state.streak = d.streak || 0;
     state.bestStreak = d.bestStreak || 0;
     state.totalCompleted = d.totalCompleted || 0;
+    state.alarmSound = d.alarmSound || 'forge';
+    state.alarmVolume = d.alarmVolume !== undefined ? d.alarmVolume : 0.8;
   } else {
     state.tasks = {};
     state.streak = 0;
     state.bestStreak = 0;
     state.totalCompleted = 0;
+    state.alarmSound = 'forge';
+    state.alarmVolume = 0.8;
   }
+  state.customAlarmData = localStorage.getItem('skejo_custom_alarm') || null;
+  updateSoundLabel();
 }
 
 function showToast(msg, type = '') {
@@ -1080,8 +1370,11 @@ function handleLogout() {
   state.streak = 0;
   state.bestStreak = 0;
   state.totalCompleted = 0;
+  state.alarmSound = 'forge';
+  state.alarmVolume = 0.8;
+  state.customAlarmData = null;
   document.getElementById('app-screen').classList.remove('active');
-  document.getElementById('auth-screen').classList.add('active');
+  document.getElementById('landing-screen').classList.add('active');
   showToast('Signed out. See you tomorrow!');
 }
 
@@ -1089,6 +1382,7 @@ function handleLogout() {
 //                    APP ENTRY
 // ═══════════════════════════════════════════════════════
 function enterApp() {
+  document.getElementById('landing-screen').classList.remove('active');
   document.getElementById('auth-screen').classList.remove('active');
   document.getElementById('app-screen').classList.add('active');
   state.selectedDate = todayStr();
@@ -1209,6 +1503,7 @@ function taskCardHTML(task, isNow = false) {
         ${task.category ? `<span class="task-tag">${task.category}</span>` : ''}
         <span class="task-tag energy-tag">${energyEmoji} ${task.energy}</span>
       </div>
+      ${task.done && task.reflection ? `<div class="task-reflection">📝 ${task.reflection}</div>` : ''}
     </div>
     <div class="task-actions">
       <button class="btn-done" onclick="toggleDone('${task.id}')">${task.done ? '✓' : '○'}</button>
@@ -1217,21 +1512,63 @@ function taskCardHTML(task, isNow = false) {
   </div>`;
 }
 
+let integrityTaskId = null;
+
 function toggleDone(id) {
   const tasks = state.tasks[state.selectedDate];
   if (!tasks) return;
   const t = tasks.find(t => t.id === id);
   if (!t) return;
-  t.done = !t.done;
+  
   if (t.done) {
-    state.totalCompleted++;
-    showToast('Ritual complete! 🎉', 'success');
+    t.done = false;
+    t.reflection = '';
+    if (state.totalCompleted > 0) state.totalCompleted--;
+    saveState();
+    renderTasks();
+    updateProgressRing();
+    updateProfileView();
+  } else {
+    integrityTaskId = id;
+    document.getElementById('integrity-task-name').textContent = t.name;
+    document.getElementById('integrity-reflection').value = '';
+    document.getElementById('integrity-confirm').checked = false;
+    document.getElementById('integrity-overlay').classList.add('active');
   }
+}
+
+function submitIntegrity() {
+  const isConfirmed = document.getElementById('integrity-confirm').checked;
+  const reflection = document.getElementById('integrity-reflection').value.trim();
+  
+  if (!isConfirmed) {
+    showToast('Please check the confirmation box', 'error');
+    return;
+  }
+  
+  const tasks = state.tasks[state.selectedDate];
+  if (!tasks) return;
+  const t = tasks.find(t => t.id === integrityTaskId);
+  if (!t) return;
+  
+  t.done = true;
+  t.reflection = reflection || 'Completed with integrity';
+  state.totalCompleted++;
+  
+  document.getElementById('integrity-overlay').classList.remove('active');
+  showToast('Ritual complete! 🎉', 'success');
+  
   saveState();
   renderTasks();
   updateProgressRing();
   updateProfileView();
   checkStreaks();
+  integrityTaskId = null;
+}
+
+function cancelIntegrity() {
+  document.getElementById('integrity-overlay').classList.remove('active');
+  integrityTaskId = null;
 }
 
 function deleteTask(id) {
@@ -1364,6 +1701,161 @@ function checkAlarms() {
   scheduleAllAlarms();
 }
 
+let alarmLoopInterval = null;
+let audioCtx = null;
+let currentPreviewAudio = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playSelectedAlarmSound() {
+  const sound = state.alarmSound || 'forge';
+  const volume = state.alarmVolume !== undefined ? state.alarmVolume : 0.8;
+  
+  if (sound === 'custom') {
+    const customData = state.customAlarmData || localStorage.getItem('skejo_custom_alarm');
+    if (customData) {
+      if (currentPreviewAudio) {
+        currentPreviewAudio.pause();
+        currentPreviewAudio = null;
+      }
+      const audio = new Audio(customData);
+      audio.volume = volume;
+      audio.play().catch(e => console.log('Audio play blocked: ', e));
+      currentPreviewAudio = audio;
+      return;
+    }
+  }
+  
+  // Synthesized Web Audio Tones
+  try {
+    const ctx = getAudioContext();
+    const destination = ctx.destination;
+    
+    // Master volume node
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(volume, ctx.currentTime);
+    masterGain.connect(destination);
+    
+    if (sound === 'forge') {
+      // Forge Alert: repeating sweep
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      osc1.type = 'sawtooth';
+      osc2.type = 'sine';
+      
+      osc1.frequency.setValueAtTime(600, ctx.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.4);
+      osc2.frequency.setValueAtTime(300, ctx.currentTime);
+      osc2.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.4);
+      
+      gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(masterGain);
+      
+      osc1.start(ctx.currentTime);
+      osc2.start(ctx.currentTime);
+      osc1.stop(ctx.currentTime + 0.5);
+      osc2.stop(ctx.currentTime + 0.5);
+      
+      // Delay second sweep
+      const delay = 0.2;
+      const osc3 = ctx.createOscillator();
+      const gainNode2 = ctx.createGain();
+      osc3.type = 'sawtooth';
+      osc3.frequency.setValueAtTime(600, ctx.currentTime + delay);
+      osc3.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + delay + 0.4);
+      gainNode2.gain.setValueAtTime(0, ctx.currentTime);
+      gainNode2.gain.setValueAtTime(0.4, ctx.currentTime + delay);
+      gainNode2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.5);
+      osc3.connect(gainNode2);
+      gainNode2.connect(masterGain);
+      osc3.start(ctx.currentTime + delay);
+      osc3.stop(ctx.currentTime + delay + 0.5);
+      
+    } else if (sound === 'morning') {
+      // Morning Chime: Calming chord
+      const chords = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      chords.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2 + (idx * 0.1));
+        osc.connect(gainNode);
+        gainNode.connect(masterGain);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 1.5);
+      });
+      
+    } else if (sound === 'focus') {
+      // Focus Alarm: Assertive square pulses
+      const pulses = [0, 0.2, 0.4, 0.6];
+      pulses.forEach(delay => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(987.77, ctx.currentTime + delay);
+        gainNode.gain.setValueAtTime(0, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime + delay);
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime + delay + 0.1);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.15);
+        osc.connect(gainNode);
+        gainNode.connect(masterGain);
+        osc.start(ctx.currentTime + delay);
+        osc.stop(ctx.currentTime + delay + 0.18);
+      });
+      
+    } else if (sound === 'zen') {
+      // Zen Bowl: Low frequency bowl with slow decay
+      const baseFreq = 220;
+      const overtones = [1, 2, 3, 4.2];
+      overtones.forEach((multiplier, idx) => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq * multiplier, ctx.currentTime);
+        const volumeFactor = idx === 0 ? 0.4 : 0.1 / idx;
+        gainNode.gain.setValueAtTime(volumeFactor, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.0);
+        osc.connect(gainNode);
+        gainNode.connect(masterGain);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 2.2);
+      });
+    }
+  } catch (e) {
+    console.warn("Synthesizer error:", e);
+  }
+}
+
+function previewTone(soundId, event) {
+  if (event) event.stopPropagation();
+  
+  if (currentPreviewAudio) {
+    currentPreviewAudio.pause();
+    currentPreviewAudio = null;
+  }
+  
+  const previousSound = state.alarmSound;
+  state.alarmSound = soundId;
+  playSelectedAlarmSound();
+  state.alarmSound = previousSound;
+}
+
 function triggerAlarm(task) {
   if (task.done) return;
   state.activeAlarmTask = task;
@@ -1372,45 +1864,140 @@ function triggerAlarm(task) {
   document.getElementById('alarm-task-name').textContent = '⏰ ' + task.name;
   document.getElementById('alarm-quote').textContent = QUOTES[Math.floor(Math.random() * QUOTES.length)];
 
-  // reset breathe animation
   const bf = document.getElementById('breathe-fill');
   bf.style.animation = 'none';
   setTimeout(() => { bf.style.animation = 'breathe-in 4s ease-in-out forwards'; }, 50);
 
   overlay.classList.add('active');
 
-  // vibrate if available
   if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
 
-  // play beep sound
-  playAlarmSound();
-}
-
-function playAlarmSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const pattern = [0, 400, 800, 1200, 1600];
-    pattern.forEach(delay => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.3, ctx.currentTime + delay/1000);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay/1000 + 0.4);
-      osc.start(ctx.currentTime + delay/1000);
-      osc.stop(ctx.currentTime + delay/1000 + 0.4);
-    });
-  } catch(e) {}
+  playSelectedAlarmSound();
+  if (alarmLoopInterval) clearInterval(alarmLoopInterval);
+  alarmLoopInterval = setInterval(() => {
+    if (state.activeAlarmTask) {
+      playSelectedAlarmSound();
+      if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
+    } else {
+      clearInterval(alarmLoopInterval);
+      alarmLoopInterval = null;
+    }
+  }, 2500);
 }
 
 function dismissAlarm() {
   document.getElementById('alarm-overlay').classList.remove('active');
+  if (alarmLoopInterval) {
+    clearInterval(alarmLoopInterval);
+    alarmLoopInterval = null;
+  }
   if (state.activeAlarmTask) {
     toggleDone(state.activeAlarmTask.id);
     state.activeAlarmTask = null;
   }
   showToast('Great work! Keep it up 🔥', 'success');
+}
+
+function openSoundSettings() {
+  const sound = state.alarmSound || 'forge';
+  const radio = document.getElementById('sound-' + sound);
+  if (radio) radio.checked = true;
+  
+  const customName = localStorage.getItem('skejo_custom_alarm_name');
+  if (customName) {
+    document.getElementById('custom-sound-name').textContent = '📁 ' + customName;
+    document.getElementById('btn-play-custom').style.display = 'block';
+  } else {
+    document.getElementById('custom-sound-name').textContent = 'No custom sound uploaded';
+    document.getElementById('btn-play-custom').style.display = 'none';
+  }
+  
+  const volume = state.alarmVolume !== undefined ? state.alarmVolume : 0.8;
+  document.getElementById('alarm-volume-slider').value = Math.round(volume * 100);
+  document.getElementById('alarm-volume-label').textContent = Math.round(volume * 100) + '%';
+  
+  document.getElementById('sound-overlay').classList.add('active');
+}
+
+function closeSoundSettings() {
+  document.getElementById('sound-overlay').classList.remove('active');
+  if (currentPreviewAudio) {
+    currentPreviewAudio.pause();
+    currentPreviewAudio = null;
+  }
+}
+
+function selectAlarmSound(soundId) {
+  state.alarmSound = soundId;
+  const radio = document.getElementById('sound-' + soundId);
+  if (radio) radio.checked = true;
+  updateSoundLabel();
+  saveState();
+}
+
+function updateAlarmVolume(val) {
+  state.alarmVolume = parseFloat(val) / 100;
+  document.getElementById('alarm-volume-label').textContent = val + '%';
+  saveState();
+}
+
+function updateSoundLabel() {
+  const label = document.getElementById('current-sound-label');
+  if (label) {
+    const sound = state.alarmSound || 'forge';
+    const names = {
+      forge: 'Forge Alert ›',
+      morning: 'Morning Chime ›',
+      focus: 'Focus Alarm ›',
+      zen: 'Zen Bowl ›',
+      custom: 'Custom Sound ›'
+    };
+    label.textContent = names[sound] || 'Forge Alert ›';
+  }
+}
+
+function handleCustomAudioUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('File size must be under 2MB', 'error');
+    input.value = '';
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    try {
+      localStorage.setItem('skejo_custom_alarm', dataUrl);
+      localStorage.setItem('skejo_custom_alarm_name', file.name);
+      state.customAlarmData = dataUrl;
+      
+      document.getElementById('custom-sound-name').textContent = '📁 ' + file.name;
+      document.getElementById('btn-play-custom').style.display = 'block';
+      document.getElementById('sound-custom').checked = true;
+      state.alarmSound = 'custom';
+      updateSoundLabel();
+      saveState();
+      showToast('Custom alarm uploaded! 🎵', 'success');
+    } catch(err) {
+      showToast('Storage full. Try a smaller file.', 'error');
+      console.error(err);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function goToAuth(tab) {
+  document.getElementById('landing-screen').classList.remove('active');
+  document.getElementById('auth-screen').classList.add('active');
+  switchTab(tab);
+}
+
+function goToLanding() {
+  document.getElementById('auth-screen').classList.remove('active');
+  document.getElementById('landing-screen').classList.add('active');
 }
 
 // ═══════════════════════════════════════════════════════
