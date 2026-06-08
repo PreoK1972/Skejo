@@ -618,6 +618,15 @@
     }
     #ios-install-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
 
+    /* ─── CLOUD ALARMS OVERLAY ─── */
+    #cloud-overlay {
+      display: none; position: fixed; inset: 0; z-index: 6000;
+      background: rgba(10,10,12,0.85); backdrop-filter: blur(16px);
+      align-items: flex-end; justify-content: center;
+      padding: 0;
+    }
+    #cloud-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
+
     .about-modal {
       background: var(--surface); width: 100%; max-width: 520px;
       border-radius: 24px 24px 0 0; border-top: 1px solid var(--border);
@@ -981,6 +990,10 @@
           <span class="settings-item-label">🔔 Alarm Sound</span>
           <span id="current-sound-label" class="settings-item-icon">Forge Alert ›</span>
         </div>
+        <div class="settings-item" onclick="openCloudSettings()">
+          <span class="settings-item-label">☁️ Cloud Push Alarms</span>
+          <span id="cloud-status-label" class="settings-item-icon">Off ›</span>
+        </div>
         <div class="settings-item" id="settings-install" style="display: flex;" onclick="triggerPWAInstall()">
           <span class="settings-item-label">📲 Install App</span>
           <span class="settings-item-icon">› </span>
@@ -1193,6 +1206,96 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════ -->
+<!--               CLOUD ALARMS MODAL               -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="cloud-overlay" onclick="closeCloudSettings()">
+  <div class="about-modal" onclick="event.stopPropagation()" style="max-height: 85vh;">
+    <div class="about-header">
+      <div class="about-logo">
+        <div class="about-logo-icon">☁️</div>
+        <div class="about-logo-text">Cloud Push Alarms</div>
+        <div class="about-logo-tagline">Receive alarms even when Skejo is closed or your device is asleep</div>
+      </div>
+      <button class="about-close" onclick="closeCloudSettings()">✕</button>
+    </div>
+
+    <div class="about-body" style="gap: 16px; overflow-y: auto;">
+      <div class="about-section">
+        <div class="about-section-title">How It Works</div>
+        <div class="about-section-text" style="font-size: 13px; line-height: 1.5; color: var(--text2);">
+          Cloud Push Alarms use secure, browser-native push messages scheduled through <strong>Upstash QStash</strong>. They will wake up your device and sound the alarm even with the app closed.
+        </div>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-title">1. Setup Free Scheduler (QStash)</div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="font-size: 12.5px; color: var(--text2); line-height: 1.4;">
+            Sign up for a free account at <a href="https://console.upstash.com" target="_blank" style="color: var(--accent); text-decoration: underline;">Upstash Console</a>, copy your <strong>QStash Token</strong> (from the QStash tab), and paste it below:
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 10px;">QStash Token</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="password" id="cloud-qstash-token" class="form-input" placeholder="Paste QStash Token here..." style="font-size: 13px; padding: 10px;" oninput="saveCloudConfig()" />
+              <button onclick="toggleQStashVisibility()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text2); border-radius: var(--radius-sm); padding: 0 12px; font-size: 12px; cursor: pointer;">Show</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-title">2. Notification Permission & Registration</div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px;">
+            <span style="color: var(--text2);">Device Registration Status:</span>
+            <span id="cloud-registration-status" style="font-weight: 700; color: var(--danger);">Unsubscribed</span>
+          </div>
+          <button class="landing-btn landing-btn-secondary" id="btn-cloud-subscribe" onclick="subscribePushNotifications()" style="padding: 10px; font-size: 13px; font-family:'DM Sans',sans-serif; background: linear-gradient(135deg, var(--accent3), var(--accent2)); color: white; border: none; box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);">🔔 Subscribe This Device</button>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-title">3. Enable Cloud Alarms</div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 14px; font-weight: 500; color: var(--text);">Enable Push Alarms</div>
+            <div style="font-size: 11px; color: var(--text3); margin-top: 2px;">Alarms will schedule via Cloud instead of browser tab</div>
+          </div>
+          <label class="switch-container" style="position: relative; display: inline-block; width: 46px; height: 26px;">
+            <input type="checkbox" id="cloud-alarms-enabled" onchange="toggleCloudAlarms(this.checked)" style="opacity: 0; width: 0; height: 0;" />
+            <span class="slider" style="position: absolute; cursor: pointer; inset: 0; background-color: var(--border); border-radius: 34px; transition: .3s;"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="about-section" id="section-cloud-test" style="display: none;">
+        <button class="landing-btn landing-btn-secondary" onclick="sendTestCloudNotification()" style="padding: 10px; font-size: 13px; font-family:'DM Sans',sans-serif; width: 100%;">🧪 Send Test Notification (in 5s)</button>
+      </div>
+    </div>
+
+    <div class="about-footer">
+      <button class="btn-primary" onclick="closeCloudSettings()" style="padding: 12px; border-radius: var(--radius-sm);">Close & Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- Switch slider CSS styling -->
+<style>
+.switch-container input:checked + .slider {
+  background-color: var(--success);
+}
+.switch-container .slider:before {
+  position: absolute; content: "";
+  height: 18px; width: 18px; left: 4px; bottom: 4px;
+  background-color: white; border-radius: 50%;
+  transition: .3s;
+}
+.switch-container input:checked + .slider:before {
+  transform: translateX(20px);
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════ -->
 <!--           INTEGRITY REFLECTION MODAL            -->
 <!-- ═══════════════════════════════════════════════ -->
 <div id="integrity-overlay">
@@ -1381,7 +1484,11 @@ function saveState() {
     bestStreak: state.bestStreak,
     totalCompleted: state.totalCompleted,
     alarmSound: state.alarmSound || 'forge',
-    alarmVolume: state.alarmVolume !== undefined ? state.alarmVolume : 0.8
+    alarmVolume: state.alarmVolume !== undefined ? state.alarmVolume : 0.8,
+    cloudAlarmsEnabled: state.cloudAlarmsEnabled || false,
+    cloudQStashToken: state.cloudQStashToken || '',
+    cloudSubscription: state.cloudSubscription || null,
+    cloudVapidKeys: state.cloudVapidKeys || null
   }));
 }
 
@@ -1396,6 +1503,10 @@ function loadState() {
     state.totalCompleted = d.totalCompleted || 0;
     state.alarmSound = d.alarmSound || 'forge';
     state.alarmVolume = d.alarmVolume !== undefined ? d.alarmVolume : 0.8;
+    state.cloudAlarmsEnabled = d.cloudAlarmsEnabled || false;
+    state.cloudQStashToken = d.cloudQStashToken || '';
+    state.cloudSubscription = d.cloudSubscription || null;
+    state.cloudVapidKeys = d.cloudVapidKeys || null;
   } else {
     state.tasks = {};
     state.streak = 0;
@@ -1403,6 +1514,10 @@ function loadState() {
     state.totalCompleted = 0;
     state.alarmSound = 'forge';
     state.alarmVolume = 0.8;
+    state.cloudAlarmsEnabled = false;
+    state.cloudQStashToken = '';
+    state.cloudSubscription = null;
+    state.cloudVapidKeys = null;
   }
   state.customAlarmData = localStorage.getItem('skejo_custom_alarm') || null;
   updateSoundLabel();
@@ -1491,6 +1606,18 @@ function enterApp() {
   requestNotificationPermission();
   if (typeof checkInstallableStatus === 'function') checkInstallableStatus();
   setInterval(checkAlarms, 30000); // check every 30 seconds
+
+  // Query parameters check for cloud alarms wakeup
+  const params = new URLSearchParams(window.location.search);
+  const alarmTask = params.get('alarmTask');
+  const alarmType = params.get('alarmType');
+  if (alarmTask && alarmType) {
+    const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+    window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+    setTimeout(() => { triggerAlarmFromCloud(alarmTask, alarmType); }, 500);
+  }
+
+  updateCloudSubscriptionUI();
 }
 
 function requestNotificationPermission() {
@@ -1681,6 +1808,10 @@ function cancelIntegrity() {
 function deleteTask(id) {
   const tasks = state.tasks[state.selectedDate];
   if (!tasks) return;
+  const task = tasks.find(t => t.id === id);
+  if (task) {
+    cancelCloudAlarms(task);
+  }
   state.tasks[state.selectedDate] = tasks.filter(t => t.id !== id);
   saveState();
   renderTasks();
@@ -1790,7 +1921,10 @@ function scheduleAllAlarms() {
   const now = new Date();
 
   tasks.forEach(task => {
-    if (task.done) return;
+    if (task.done) {
+      cancelCloudAlarms(task);
+      return;
+    }
     
     // Start Time Alarm
     const [sh, sm] = task.start.split(':').map(Number);
@@ -1810,6 +1944,10 @@ function scheduleAllAlarms() {
     if (endMs > 0 && endMs < 86400000) {
       const tid = setTimeout(() => triggerEndAlarm(task), endMs);
       state.alarmTimers.push(tid);
+    }
+
+    if (state.cloudAlarmsEnabled && state.cloudSubscription && state.cloudQStashToken) {
+      scheduleCloudAlarmsForTask(task);
     }
   });
 }
@@ -2389,6 +2527,344 @@ function exportUserData() {
     console.error(err);
   }
 }
+
+// ═══════════════════════════════════════════════════════
+//                  CLOUD ALARMS LOGIC
+// ═══════════════════════════════════════════════════════
+
+function openCloudSettings() {
+  const qstashToken = state.cloudQStashToken || localStorage.getItem('skejo_cloud_qstash_token') || '';
+  document.getElementById('cloud-qstash-token').value = qstashToken;
+
+  const enabled = state.cloudAlarmsEnabled || false;
+  document.getElementById('cloud-alarms-enabled').checked = enabled;
+
+  updateCloudSubscriptionUI();
+  document.getElementById('cloud-overlay').classList.add('active');
+}
+
+function closeCloudSettings() {
+  document.getElementById('cloud-overlay').classList.remove('active');
+}
+
+function toggleQStashVisibility() {
+  const input = document.getElementById('cloud-qstash-token');
+  const btn = input.nextElementSibling;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = 'Hide';
+  } else {
+    input.type = 'password';
+    btn.textContent = 'Show';
+  }
+}
+
+function saveCloudConfig() {
+  const token = document.getElementById('cloud-qstash-token').value.trim();
+  state.cloudQStashToken = token;
+  localStorage.setItem('skejo_cloud_qstash_token', token);
+  saveState();
+  updateCloudSubscriptionUI();
+}
+
+function toggleCloudAlarms(enabled) {
+  if (enabled && (!state.cloudQStashToken || !state.cloudSubscription)) {
+    showToast('Please set QStash Token and Subscribe device first', 'error');
+    document.getElementById('cloud-alarms-enabled').checked = false;
+    return;
+  }
+  state.cloudAlarmsEnabled = enabled;
+  document.getElementById('cloud-status-label').textContent = enabled ? 'On ›' : 'Off ›';
+  saveState();
+  showToast(enabled ? 'Cloud push alarms enabled! ☁️' : 'Cloud push alarms disabled.', 'success');
+  scheduleAllAlarms();
+}
+
+function updateCloudSubscriptionUI() {
+  const statusEl = document.getElementById('cloud-registration-status');
+  const subBtn = document.getElementById('btn-cloud-subscribe');
+  const testSection = document.getElementById('section-cloud-test');
+
+  const sub = state.cloudSubscription || JSON.parse(localStorage.getItem('skejo_cloud_subscription') || 'null');
+  const token = state.cloudQStashToken || localStorage.getItem('skejo_cloud_qstash_token') || '';
+
+  if (sub) {
+    statusEl.textContent = 'Subscribed';
+    statusEl.style.color = 'var(--success)';
+    subBtn.textContent = '🔔 Re-subscribe Device';
+    if (token) {
+      testSection.style.display = 'block';
+    } else {
+      testSection.style.display = 'none';
+    }
+  } else {
+    statusEl.textContent = 'Unsubscribed';
+    statusEl.style.color = 'var(--danger)';
+    subBtn.textContent = '🔔 Subscribe This Device';
+    testSection.style.display = 'none';
+  }
+
+  const label = document.getElementById('cloud-status-label');
+  if (label) {
+    label.textContent = (state.cloudAlarmsEnabled) ? 'On ›' : 'Off ›';
+  }
+}
+
+async function getVapidKeys() {
+  let vapidKeys = state.cloudVapidKeys || JSON.parse(localStorage.getItem('skejo_cloud_vapid_keys') || 'null');
+  if (!vapidKeys) {
+    try {
+      const res = await fetch('/api/generate-vapid');
+      if (!res.ok) throw new Error('Failed to generate VAPID keys');
+      vapidKeys = await res.json();
+      state.cloudVapidKeys = vapidKeys;
+      localStorage.setItem('skejo_cloud_vapid_keys', JSON.stringify(vapidKeys));
+      saveState();
+    } catch (err) {
+      console.error(err);
+      showToast('Could not generate push keys. Try again later.', 'error');
+      return null;
+    }
+  }
+  return vapidKeys;
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+async function subscribePushNotifications() {
+  try {
+    const vapidKeys = await getVapidKeys();
+    if (!vapidKeys) return;
+
+    if (!('serviceWorker' in navigator)) {
+      showToast('Service workers not supported on this browser', 'error');
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+    if (!registration) {
+      showToast('Service worker not ready yet', 'error');
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      showToast('Notification permission denied', 'error');
+      return;
+    }
+
+    const subscribeOptions = {
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(vapidKeys.publicKey)
+    };
+
+    let subscription = await registration.pushManager.getSubscription();
+    if (subscription) {
+      await subscription.unsubscribe();
+    }
+    
+    subscription = await registration.pushManager.subscribe(subscribeOptions);
+
+    state.cloudSubscription = subscription;
+    localStorage.setItem('skejo_cloud_subscription', JSON.stringify(subscription));
+    saveState();
+
+    updateCloudSubscriptionUI();
+    showToast('Device subscribed successfully! 🎉', 'success');
+  } catch (err) {
+    console.error('Push subscription error:', err);
+    showToast('Failed to subscribe device: ' + err.message, 'error');
+  }
+}
+
+async function sendTestCloudNotification() {
+  const sub = state.cloudSubscription;
+  const token = state.cloudQStashToken;
+  const vapidKeys = state.cloudVapidKeys;
+
+  if (!sub || !token || !vapidKeys) {
+    showToast('Missing subscription or QStash config', 'error');
+    return;
+  }
+
+  showToast('Test notification scheduled in 5 seconds...', 'success');
+
+  try {
+    const res = await fetch('/api/schedule', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subscription: sub,
+        taskId: 'test-id',
+        taskName: 'Test Routine 🧪',
+        type: 'start',
+        timeStr: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        delay: 5,
+        qStashToken: token,
+        vapidKeys: vapidKeys
+      })
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || 'Server error');
+    }
+    showToast('Schedule created in cloud!', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast('Test failed: ' + err.message, 'error');
+  }
+}
+
+async function scheduleCloudAlarmsForTask(task) {
+  const now = new Date();
+  
+  const [sh, sm] = task.start.split(':').map(Number);
+  const startAlarmTime = new Date();
+  startAlarmTime.setHours(sh, sm, 0, 0);
+  const startMs = startAlarmTime - now;
+  const startDelaySeconds = Math.round(startMs / 1000);
+
+  const [eh, em] = task.end.split(':').map(Number);
+  const endAlarmTime = new Date();
+  endAlarmTime.setHours(eh, em, 0, 0);
+  const endMs = endAlarmTime - now;
+  const endDelaySeconds = Math.round(endMs / 1000);
+
+  const timesChanged = task.start !== task.scheduledStart || task.end !== task.scheduledEnd;
+  
+  if (timesChanged && (task.cloudStartMessageId || task.cloudEndMessageId)) {
+    await cancelCloudAlarms(task);
+  }
+
+  if (!task.cloudStartMessageId && startDelaySeconds > 0) {
+    try {
+      const res = await callScheduleApi(task, 'start', startDelaySeconds);
+      if (res && res.messageId) {
+        task.cloudStartMessageId = res.messageId;
+        task.scheduledStart = task.start;
+        saveState();
+      }
+    } catch (err) {
+      console.warn('Failed to schedule cloud start alarm:', err);
+    }
+  }
+
+  if (!task.cloudEndMessageId && endDelaySeconds > 0) {
+    try {
+      const res = await callScheduleApi(task, 'end', endDelaySeconds);
+      if (res && res.messageId) {
+        task.cloudEndMessageId = res.messageId;
+        task.scheduledEnd = task.end;
+        saveState();
+      }
+    } catch (err) {
+      console.warn('Failed to schedule cloud end alarm:', err);
+    }
+  }
+}
+
+async function callScheduleApi(task, type, delaySeconds) {
+  const sub = state.cloudSubscription;
+  const token = state.cloudQStashToken;
+  const vapidKeys = state.cloudVapidKeys;
+  if (!sub || !token || !vapidKeys) return null;
+
+  const res = await fetch('/api/schedule', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      subscription: sub,
+      taskId: task.id,
+      taskName: task.name,
+      type: type,
+      timeStr: type === 'start' ? task.start : task.end,
+      delay: delaySeconds,
+      qStashToken: token,
+      vapidKeys: vapidKeys
+    })
+  });
+
+  if (!res.ok) {
+    const errData = await res.json();
+    throw new Error(errData.error || 'Server error');
+  }
+  return await res.json();
+}
+
+async function cancelCloudAlarms(task) {
+  const token = state.cloudQStashToken;
+  if (!token) return;
+
+  if (task.cloudStartMessageId) {
+    try {
+      await fetch('/api/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messageId: task.cloudStartMessageId, qStashToken: token })
+      });
+      task.cloudStartMessageId = null;
+      task.scheduledStart = null;
+    } catch (err) {
+      console.warn('Failed to cancel start alarm:', err);
+    }
+  }
+
+  if (task.cloudEndMessageId) {
+    try {
+      await fetch('/api/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messageId: task.cloudEndMessageId, qStashToken: token })
+      });
+      task.cloudEndMessageId = null;
+      task.scheduledEnd = null;
+    } catch (err) {
+      console.warn('Failed to cancel end alarm:', err);
+    }
+  }
+  saveState();
+}
+
+function triggerAlarmFromCloud(taskId, type) {
+  let foundTask = null;
+  const today = todayStr();
+  const tasks = state.tasks[today] || [];
+  foundTask = tasks.find(t => t.id === taskId);
+  
+  if (!foundTask) {
+    for (const date in state.tasks) {
+      foundTask = state.tasks[date].find(t => t.id === taskId);
+      if (foundTask) break;
+    }
+  }
+
+  if (foundTask) {
+    switchView('schedule');
+    triggerAlarm(foundTask, type);
+  }
+}
+
+navigator.serviceWorker.addEventListener('message', event => {
+  if (event.data && event.data.type === 'ALARM_CLICKED') {
+    const taskId = event.data.taskId;
+    const alarmType = event.data.alarmType;
+    triggerAlarmFromCloud(taskId, alarmType);
+  }
+});
 </script>
 
 <!-- PWA SERVICE WORKER REGISTRATION -->

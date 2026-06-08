@@ -51,3 +51,50 @@ self.addEventListener('fetch', e => {
   }
 });
 
+self.addEventListener('push', e => {
+  if (e.data) {
+    try {
+      const payload = e.data.json();
+      const options = {
+        body: payload.body,
+        icon: 'icon-192.png',
+        badge: 'icon-192.png',
+        vibrate: [200, 100, 200],
+        data: payload.data || {},
+        requireInteraction: true
+      };
+      e.waitUntil(
+        self.registration.showNotification(payload.title, options)
+      );
+    } catch (err) {
+      console.error('Error parsing push data:', err);
+    }
+  }
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const taskId = e.notification.data.taskId;
+  const type = e.notification.data.type;
+  
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url.startsWith(self.location.origin) && 'focus' in client) {
+          client.postMessage({
+            type: 'ALARM_CLICKED',
+            taskId: taskId,
+            alarmType: type
+          });
+          return client.focus();
+        }
+      }
+      if (self.clients.openWindow) {
+        const url = `./?alarmTask=${taskId}&alarmType=${type}`;
+        return self.clients.openWindow(url);
+      }
+    })
+  );
+});
+
+
