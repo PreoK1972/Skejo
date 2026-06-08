@@ -1223,28 +1223,12 @@
       <div class="about-section">
         <div class="about-section-title">How It Works</div>
         <div class="about-section-text" style="font-size: 13px; line-height: 1.5; color: var(--text2);">
-          Cloud Push Alarms use secure, browser-native push messages scheduled through <strong>Upstash QStash</strong>. They will wake up your device and sound the alarm even with the app closed.
+          Cloud Push Alarms wake up your device and sound the alarm even when Skejo is fully closed. By activating background notifications, schedules are managed in the cloud automatically.
         </div>
       </div>
 
       <div class="about-section">
-        <div class="about-section-title">1. Setup Free Scheduler (QStash)</div>
-        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; display: flex; flex-direction: column; gap: 10px;">
-          <div style="font-size: 12.5px; color: var(--text2); line-height: 1.4;">
-            Sign up for a free account at <a href="https://console.upstash.com" target="_blank" style="color: var(--accent); text-decoration: underline;">Upstash Console</a>, copy your <strong>QStash Token</strong> (from the QStash tab), and paste it below:
-          </div>
-          <div>
-            <label class="form-label" style="font-size: 10px;">QStash Token</label>
-            <div style="display: flex; gap: 8px;">
-              <input type="password" id="cloud-qstash-token" class="form-input" placeholder="Paste QStash Token here..." style="font-size: 13px; padding: 10px;" oninput="saveCloudConfig()" />
-              <button onclick="toggleQStashVisibility()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text2); border-radius: var(--radius-sm); padding: 0 12px; font-size: 12px; cursor: pointer;">Show</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="about-section">
-        <div class="about-section-title">2. Notification Permission & Registration</div>
+        <div class="about-section-title">1. Notification Permission & Registration</div>
         <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; display: flex; flex-direction: column; gap: 12px;">
           <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px;">
             <span style="color: var(--text2);">Device Registration Status:</span>
@@ -1255,7 +1239,7 @@
       </div>
 
       <div class="about-section">
-        <div class="about-section-title">3. Enable Cloud Alarms</div>
+        <div class="about-section-title">2. Enable Cloud Alarms</div>
         <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; display: flex; align-items: center; justify-content: space-between;">
           <div>
             <div style="font-size: 14px; font-weight: 500; color: var(--text);">Enable Push Alarms</div>
@@ -2533,9 +2517,6 @@ function exportUserData() {
 // ═══════════════════════════════════════════════════════
 
 function openCloudSettings() {
-  const qstashToken = state.cloudQStashToken || localStorage.getItem('skejo_cloud_qstash_token') || '';
-  document.getElementById('cloud-qstash-token').value = qstashToken;
-
   const enabled = state.cloudAlarmsEnabled || false;
   document.getElementById('cloud-alarms-enabled').checked = enabled;
 
@@ -2547,29 +2528,9 @@ function closeCloudSettings() {
   document.getElementById('cloud-overlay').classList.remove('active');
 }
 
-function toggleQStashVisibility() {
-  const input = document.getElementById('cloud-qstash-token');
-  const btn = input.nextElementSibling;
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = 'Hide';
-  } else {
-    input.type = 'password';
-    btn.textContent = 'Show';
-  }
-}
-
-function saveCloudConfig() {
-  const token = document.getElementById('cloud-qstash-token').value.trim();
-  state.cloudQStashToken = token;
-  localStorage.setItem('skejo_cloud_qstash_token', token);
-  saveState();
-  updateCloudSubscriptionUI();
-}
-
 function toggleCloudAlarms(enabled) {
-  if (enabled && (!state.cloudQStashToken || !state.cloudSubscription)) {
-    showToast('Please set QStash Token and Subscribe device first', 'error');
+  if (enabled && !state.cloudSubscription) {
+    showToast('Please Subscribe this device first', 'error');
     document.getElementById('cloud-alarms-enabled').checked = false;
     return;
   }
@@ -2586,17 +2547,12 @@ function updateCloudSubscriptionUI() {
   const testSection = document.getElementById('section-cloud-test');
 
   const sub = state.cloudSubscription || JSON.parse(localStorage.getItem('skejo_cloud_subscription') || 'null');
-  const token = state.cloudQStashToken || localStorage.getItem('skejo_cloud_qstash_token') || '';
 
   if (sub) {
     statusEl.textContent = 'Subscribed';
     statusEl.style.color = 'var(--success)';
     subBtn.textContent = '🔔 Re-subscribe Device';
-    if (token) {
-      testSection.style.display = 'block';
-    } else {
-      testSection.style.display = 'none';
-    }
+    testSection.style.display = 'block';
   } else {
     statusEl.textContent = 'Unsubscribed';
     statusEl.style.color = 'var(--danger)';
@@ -2610,23 +2566,24 @@ function updateCloudSubscriptionUI() {
   }
 }
 
-async function getVapidKeys() {
-  let vapidKeys = state.cloudVapidKeys || JSON.parse(localStorage.getItem('skejo_cloud_vapid_keys') || 'null');
-  if (!vapidKeys) {
+async function getVapidPublicKey() {
+  let publicKey = state.cloudVapidPublicKey || localStorage.getItem('skejo_cloud_vapid_public_key');
+  if (!publicKey) {
     try {
-      const res = await fetch('/api/generate-vapid');
-      if (!res.ok) throw new Error('Failed to generate VAPID keys');
-      vapidKeys = await res.json();
-      state.cloudVapidKeys = vapidKeys;
-      localStorage.setItem('skejo_cloud_vapid_keys', JSON.stringify(vapidKeys));
+      const res = await fetch('/api/vapid-public-key');
+      if (!res.ok) throw new Error('Failed to fetch VAPID public key from server');
+      const data = await res.json();
+      publicKey = data.publicKey;
+      state.cloudVapidPublicKey = publicKey;
+      localStorage.setItem('skejo_cloud_vapid_public_key', publicKey);
       saveState();
     } catch (err) {
       console.error(err);
-      showToast('Could not generate push keys. Try again later.', 'error');
+      showToast('Could not retrieve push keys. Server is not fully configured.', 'error');
       return null;
     }
   }
-  return vapidKeys;
+  return publicKey;
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -2646,8 +2603,8 @@ function urlBase64ToUint8Array(base64String) {
 
 async function subscribePushNotifications() {
   try {
-    const vapidKeys = await getVapidKeys();
-    if (!vapidKeys) return;
+    const publicKey = await getVapidPublicKey();
+    if (!publicKey) return;
 
     if (!('serviceWorker' in navigator)) {
       showToast('Service workers not supported on this browser', 'error');
@@ -2668,7 +2625,7 @@ async function subscribePushNotifications() {
 
     const subscribeOptions = {
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(vapidKeys.publicKey)
+      applicationServerKey: urlBase64ToUint8Array(publicKey)
     };
 
     let subscription = await registration.pushManager.getSubscription();
@@ -2692,11 +2649,9 @@ async function subscribePushNotifications() {
 
 async function sendTestCloudNotification() {
   const sub = state.cloudSubscription;
-  const token = state.cloudQStashToken;
-  const vapidKeys = state.cloudVapidKeys;
 
-  if (!sub || !token || !vapidKeys) {
-    showToast('Missing subscription or QStash config', 'error');
+  if (!sub) {
+    showToast('Device is not subscribed', 'error');
     return;
   }
 
@@ -2712,9 +2667,7 @@ async function sendTestCloudNotification() {
         taskName: 'Test Routine 🧪',
         type: 'start',
         timeStr: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        delay: 5,
-        qStashToken: token,
-        vapidKeys: vapidKeys
+        delay: 5
       })
     });
 
@@ -2779,9 +2732,7 @@ async function scheduleCloudAlarmsForTask(task) {
 
 async function callScheduleApi(task, type, delaySeconds) {
   const sub = state.cloudSubscription;
-  const token = state.cloudQStashToken;
-  const vapidKeys = state.cloudVapidKeys;
-  if (!sub || !token || !vapidKeys) return null;
+  if (!sub) return null;
 
   const res = await fetch('/api/schedule', {
     method: 'POST',
@@ -2792,9 +2743,7 @@ async function callScheduleApi(task, type, delaySeconds) {
       taskName: task.name,
       type: type,
       timeStr: type === 'start' ? task.start : task.end,
-      delay: delaySeconds,
-      qStashToken: token,
-      vapidKeys: vapidKeys
+      delay: delaySeconds
     })
   });
 
@@ -2806,15 +2755,12 @@ async function callScheduleApi(task, type, delaySeconds) {
 }
 
 async function cancelCloudAlarms(task) {
-  const token = state.cloudQStashToken;
-  if (!token) return;
-
   if (task.cloudStartMessageId) {
     try {
       await fetch('/api/cancel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messageId: task.cloudStartMessageId, qStashToken: token })
+        body: JSON.stringify({ messageId: task.cloudStartMessageId })
       });
       task.cloudStartMessageId = null;
       task.scheduledStart = null;
@@ -2828,7 +2774,7 @@ async function cancelCloudAlarms(task) {
       await fetch('/api/cancel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messageId: task.cloudEndMessageId, qStashToken: token })
+        body: JSON.stringify({ messageId: task.cloudEndMessageId })
       });
       task.cloudEndMessageId = null;
       task.scheduledEnd = null;

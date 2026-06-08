@@ -15,18 +15,26 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { subscription, taskId, taskName, type, timeStr, vapidKeys } = req.body;
+  const { subscription, taskId, taskName, type, timeStr } = req.body;
 
-  if (!subscription || !taskId || !taskName || !type || !timeStr || !vapidKeys) {
+  if (!subscription || !taskId || !taskName || !type || !timeStr) {
     res.status(400).json({ error: 'Missing required parameters' });
+    return;
+  }
+
+  const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
+  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+  if (!vapidPublicKey || !vapidPrivateKey) {
+    res.status(500).json({ error: 'Server environment is not configured with VAPID keys.' });
     return;
   }
 
   try {
     webpush.setVapidDetails(
       'mailto:skejo-alarms@example.com',
-      vapidKeys.publicKey,
-      vapidKeys.privateKey
+      vapidPublicKey,
+      vapidPrivateKey
     );
 
     const title = type === 'start' ? `🌅 Begin: ${taskName}` : `🏁 Complete: ${taskName}`;

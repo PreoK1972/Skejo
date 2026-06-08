@@ -13,10 +13,19 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { subscription, taskId, taskName, type, timeStr, delay, qStashToken, vapidKeys } = req.body;
+  const { subscription, taskId, taskName, type, timeStr, delay } = req.body;
 
-  if (!subscription || !taskId || !taskName || !type || !timeStr || delay === undefined || !qStashToken || !vapidKeys) {
+  if (!subscription || !taskId || !taskName || !type || !timeStr || delay === undefined) {
     res.status(400).json({ error: 'Missing required parameters' });
+    return;
+  }
+
+  const qStashToken = process.env.QSTASH_TOKEN;
+  const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
+  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+  if (!qStashToken || !vapidPublicKey || !vapidPrivateKey) {
+    res.status(500).json({ error: 'Server environment is not fully configured. Please set QSTASH_TOKEN, VAPID_PUBLIC_KEY, and VAPID_PRIVATE_KEY.' });
     return;
   }
 
@@ -40,8 +49,7 @@ module.exports = async (req, res) => {
         taskId,
         taskName,
         type,
-        timeStr,
-        vapidKeys
+        timeStr
       })
     });
 

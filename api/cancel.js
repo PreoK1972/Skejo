@@ -13,10 +13,17 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { messageId, qStashToken } = req.body;
+  const { messageId } = req.body;
 
-  if (!messageId || !qStashToken) {
+  if (!messageId) {
     res.status(400).json({ error: 'Missing required parameters' });
+    return;
+  }
+
+  const qStashToken = process.env.QSTASH_TOKEN;
+
+  if (!qStashToken) {
+    res.status(500).json({ error: 'Server environment is not configured with QSTASH_TOKEN.' });
     return;
   }
 
@@ -28,8 +35,6 @@ module.exports = async (req, res) => {
       }
     });
 
-    // QStash might return 200 or 202. If the message was already delivered or expired,
-    // it might return a 404, which we can ignore gracefully since there is nothing to cancel.
     if (!response.ok && response.status !== 404) {
       const errorText = await response.text();
       throw new Error(`QStash API error: ${response.status} - ${errorText}`);
